@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Collections.Generic;
 using System.Globalization;
 using PhotoSharingApplication.Models;
 using PhotoSharingApplication.Data;
@@ -20,9 +19,30 @@ namespace PhotoSharingApplication.Controllers
         // GET: Photo
         public ActionResult Index()
         {
-            return View("Index",Context.Photos.ToList());
+            return View("Index");
 
         }
+
+        [ChildActionOnly]
+        public ActionResult _PhotoGallery(int number = 0)
+        {
+            List<Photo> photos;
+            if (number == 0)
+            {
+                photos = Context.Photos.ToList();
+            }
+            else
+            {
+                photos = (
+                from p in Context.Photos
+                orderby p.CreatedDate descending
+                select p).Take(number).ToList();
+            }
+
+            return PartialView("_PhotoGallery",photos);
+
+        }
+
 
         public ActionResult Display(int id)
         {
